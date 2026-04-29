@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="algorithmAnalysis/search_algorithms.py" />
+  </Folder>
+  <Project Path="algorithmAnalysis/algorithmAnalysis.pyproj" Type="888888a0-9f3d-457c-b088-3a5042f75d52" Id="ac89958c-4ee1-4445-a83c-9741024f35f5">
+    <Build Project="false" />
+  </Project>
+</Solution>
