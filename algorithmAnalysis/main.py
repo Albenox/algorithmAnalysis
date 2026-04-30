@@ -1,8 +1,11 @@
 # main.py
-# Part 2: Randomized testing
+# Part 3: Measure and compare runtime growth
 
-# Import random so we can generate random numbers and random targets
+# Import random so we can generate random lists and random targets
 import random
+
+# Import time so we can measure how long each search takes
+import time
 
 # Import the three search functions from the provided file
 from search_algorithms import recursive_binary_search
@@ -10,48 +13,53 @@ from search_algorithms import iterative_binary_search
 from search_algorithms import sequential_search
 
 
-# Helper function to cleanly print results
-def print_result(search_name, target, index):
-    # If index is not -1, the target was found
-    if index != -1:
-        print(f"{search_name}: {target} found at index {index}")
-    else:
-        # If index is -1, the target was not found
-        print(f"{search_name}: {target} not found")
-
-
 def main():
-    # Create a random list of 20 numbers from 1 to 100
-    arr = [random.randint(1, 100) for _ in range(20)]
+    # These are the different list sizes required by the assignment
+    dataSize = [5000, 50000, 100000, 150000, 1000000]
 
-    # Sort the list so binary search will work correctly
-    arr.sort()
+    # Print a basic title for the results
+    print("Search Algorithm Runtime Results")
+    print("--------------------------------")
 
-    # 50% chance to choose a target from the list
-    # 50% chance to choose 999, which should not be in the list
-    if random.random() < 0.5:
-        target = random.choice(arr)
-    else:
-        target = 999
+    # Outer loop: goes through each data size
+    for N in dataSize:
 
-    # Print the list and target so we can see what is being searched
-    print("Random sorted list:")
-    print(arr)
-    print()
-    print(f"Target: {target}")
-    print()
+        # These variables will keep track of the total time across 10 runs
+        SumRBS = 0
+        SumIBS = 0
+        SumSeqS = 0
 
-    # Run recursive binary search
-    index = recursive_binary_search(arr, target, 0, len(arr) - 1)
-    print_result("Recursive Binary Search", target, index)
+        # Inner loop: runs the experiment 10 times for the current data size
+        for _ in range(10):
 
-    # Run iterative binary search
-    index = iterative_binary_search(arr, target)
-    print_result("Iterative Binary Search", target, index)
+            # Create a sorted list of N random numbers
+            # Binary search requires the list to be sorted
+            arr = sorted([random.randint(1, 1000000) for _ in range(N)])
 
-    # Run sequential search
-    index = sequential_search(arr, target)
-    print_result("Sequential Search", target, index)
+            # Choose a random target to search for
+            target = random.randint(1, 1000000)
+
+            # Time recursive binary search
+            start = time.perf_counter()
+            recursive_binary_search(arr, target, 0, len(arr) - 1)
+            SumRBS += (time.perf_counter() - start) * 1_000_000
+
+            # Time iterative binary search
+            start = time.perf_counter()
+            iterative_binary_search(arr, target)
+            SumIBS += (time.perf_counter() - start) * 1_000_000
+
+            # Time sequential search
+            start = time.perf_counter()
+            sequential_search(arr, target)
+            SumSeqS += (time.perf_counter() - start) * 1_000_000
+
+        # After 10 runs, calculate and print the average time for each algorithm
+        print(f"N = {N}")
+        print(f"Average Recursive Binary Search time: {SumRBS / 10:.2f} µs")
+        print(f"Average Iterative Binary Search time: {SumIBS / 10:.2f} µs")
+        print(f"Average Sequential Search time: {SumSeqS / 10:.2f} µs")
+        print()
 
 
 # Standard Python entry point
